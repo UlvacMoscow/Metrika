@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 #
 # print('?'.join((AUTH_URL, urlencode(auth_data))))
 #
-TOKEN = 'AQAAAAAHPqQEAATpni9X1Yz75kDUtVIvdVxhrlE'
+
 #
 #
 #
@@ -34,16 +34,24 @@ TOKEN = 'AQAAAAAHPqQEAATpni9X1Yz75kDUtVIvdVxhrlE'
 #     'metrics' : 'ym:s:visits'
 # }
 #
+
+TOKEN = 'AQAAAAAHPqQEAATpni9X1Yz75kDUtVIvdVxhrlE'
 # params = {
+#     'id' : '48219119'
 #     'oauth_token': TOKEN,
 #     'pretty': 1,
+# }
+#
+# headers = {
+#     'Authorization': 'OAuth {}'.format(TOKEN)
 # }
 #
 #
 # response = requests.get('https://api-metrika.yandex.ru/stat/v1/data', params, headers=headers)
 # pprint(response.json())
+
 #
-#
+
 
 
 class YaBAse:
@@ -81,12 +89,41 @@ class Counter(YaBAse):
         headers = self.get_headers()
         params = {
             'id' : self.counter_id,
-            'metrics' : 'ym:s:visits'
+            'metrics' : ['ym:s:visits', 'ym:s:pageviews', 'ym:s:users']
         }
         response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
                                 params, headers=headers)
         try:
-            return response.json()['data'][0]['metrics'][0]
+            # return response.json()['data'][0]['metrics'][0]  исход
+            return response.json()
+        except IndexError as e:
+            return e
+
+
+    def page_views(self):
+        headers = self.get_headers()
+        params = {
+            'id' : self.counter_id,
+            'metrics' : 'ym:s:pageviews'
+        }
+        response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
+                                params, headers=headers)
+        try:
+            return response.json()
+        except IndexError as e:
+            return e
+
+
+    def users(self):
+        headers = self.get_headers()
+        params = {
+            'id' : self.counter_id,
+            'metrics' : 'ym:s:users'
+        }
+        response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
+                                params, headers=headers)
+        try:
+            return response.json()
         except IndexError as e:
             return e
 
@@ -97,4 +134,6 @@ pprint(counters)
 for counter_id in counters:
     counter = Counter(counter_id, first_user.token)
     visits = counter.visits
-    print(visits)
+    views = counter.page_views()
+    pprint(visits)
+    # pprint('визиты ', views)

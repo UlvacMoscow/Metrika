@@ -89,13 +89,13 @@ class Counter(YaBAse):
         headers = self.get_headers()
         params = {
             'id' : self.counter_id,
-            'metrics' : ['ym:s:visits', 'ym:s:pageviews', 'ym:s:users']
+            'metrics' : ['ym:s:visits']
         }
         response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
                                 params, headers=headers)
         try:
-            # return response.json()['data'][0]['metrics'][0]  исход
-            return response.json()
+            return response.json()['data'][0]['metrics'][0]
+            # return response.json()
         except IndexError as e:
             return e
 
@@ -109,7 +109,8 @@ class Counter(YaBAse):
         response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
                                 params, headers=headers)
         try:
-            return response.json()
+            return response.json()['data'][0]['metrics'][0]
+             # return response.json()
         except IndexError as e:
             return e
 
@@ -123,7 +124,7 @@ class Counter(YaBAse):
         response = requests.get('https://api-metrika.yandex.ru/stat/v1/data',
                                 params, headers=headers)
         try:
-            return response.json()
+            return response.json()['data'][0]['metrics'][0]
         except IndexError as e:
             return e
 
@@ -135,5 +136,6 @@ for counter_id in counters:
     counter = Counter(counter_id, first_user.token)
     visits = counter.visits
     views = counter.page_views()
-    pprint(visits)
-    # pprint('визиты ', views)
+    print('визиты', visits)
+    print('просмотры', views)
+    print('посетители', counter.users())
